@@ -2,6 +2,9 @@ from git import Repo
 import git
 from os import system
 import os
+import shutil
+
+print("Downloading repository, please wait...")
 
 repo_url = "https://github.com/ZaLa0987654321/HaplinOnlineAutoModLoader.git"
 repo = None
@@ -17,6 +20,8 @@ remote = git.remote.Remote(repo, "origin")
 
 added_files = []
 deleted_files = []
+
+print("Fetching new data...")
 
 for i in remote.fetch():
 	[added_files.append(f.a_blob) for f in i.commit.diff(repo.head.commit)]
@@ -45,3 +50,6 @@ for f in tree["mods"]:
 	_, ext = os.path.splitext(f.path)
 	if ext == ".jar":
 		print(" = " + f.path)
+
+print("Copy mods to minecraft...")
+shutil.copytree("Cloned\\mods", "mods", dirs_exist_ok=True)
