@@ -9,10 +9,14 @@ print("Downloading repository, please wait...")
 repo_url = "https://github.com/ZaLa0987654321/HaplinOnlineAutoModLoader.git"
 repo = None
 
-if not os.path.isdir('Cloned'):
-	repo = Repo.clone_from(repo_url, "Cloned")
+rep_dir = 'Cloned'
+
+if not os.path.exists(rep_dir + "\\.git"):
+	repo = Repo.clone_from(repo_url, rep_dir)
+	print("Copy mods to minecraft...")
+	shutil.copytree("Cloned\\mods", "mods", dirs_exist_ok=True)
 else:
-	repo = Repo("Cloned")
+	repo = Repo(rep_dir)
 
 tree = repo.head.commit.tree
 
@@ -30,15 +34,17 @@ for i in remote.fetch():
 print("Added:", added_files)
 print("Deleted:", deleted_files)
 
+print("-"*10 + "-----Changed Files-----" + "-"*10)
+
 for f in added_files:
 	if f is not None:
-		with open("Cloned\\" + f.path, "wb") as af:
+		with open(f.path, "wb") as af:
 			af.write(f.data_stream.read())
 			print(" + " + f.path)
 
 for f in deleted_files:
 	if f is not None:
-		os.remove("Cloned\\" + f.path)
+		os.remove(f.path) # rep_dir + "\\" + 
 		print(" - " + f.path)
 
 repo.head.reset(str(remote.fetch()[0].commit), index=True, working_tree=True)
@@ -50,6 +56,3 @@ for f in tree["mods"]:
 	_, ext = os.path.splitext(f.path)
 	if ext == ".jar":
 		print(" = " + f.path)
-
-print("Copy mods to minecraft...")
-shutil.copytree("Cloned\\mods", "mods", dirs_exist_ok=True)
